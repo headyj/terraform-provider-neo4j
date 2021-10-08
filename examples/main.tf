@@ -1,20 +1,27 @@
 terraform {
   required_providers {
-    hashicups = {
+    cypher = {
       version = "0.2"
-      source  = "hashicorp.com/edu/hashicups"
+      source  = "hashicorp.com/edu/cypher"
     }
   }
 }
 
-provider "hashicups" {}
+provider "cypher" {
+  uri      = "neo4j://localhost:7687"
+  username = "neo4j"
+  password = "password1"
+}
 
 module "psl" {
-  source = "./coffee"
+  source = "./cypher"
 
-  coffee_name = "Packer Spiced Latte"
 }
 
-output "psl" {
-  value = module.psl.coffee
+/*output "database" {
+  value = module.psl.database
 }
+
+output "databases" {
+  value = module.psl.databases
+}*/

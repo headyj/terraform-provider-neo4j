@@ -1,9 +1,9 @@
-# Terraform Provider Hashicups
+# Terraform Provider Cypher
 
 Run the following command to build the provider
 
 ```shell
-go build -o terraform-provider-hashicups
+go build -o terraform-provider-cypher
 ```
 
 ## Test sample configuration
