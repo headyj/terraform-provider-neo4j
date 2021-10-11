@@ -1,20 +1,20 @@
 terraform {
   required_providers {
-    cypher = {
+    neo4j = {
       version = "0.2"
-      source  = "hashicorp.com/edu/cypher"
+      source  = "headyj/neo4j"
     }
   }
 }
 
-provider "cypher" {
-  uri      = "neo4j://localhost:7687"
+provider "neo4j" {
+  host     = "neo4j://localhost:7687"
   username = "neo4j"
   password = "password1"
 }
 
 module "psl" {
-  source = "./cypher"
+  source = "./neo4j"
 
 }
 

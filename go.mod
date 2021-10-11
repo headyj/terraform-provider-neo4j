@@ -1,4 +1,4 @@
-module terraform-provider-cypher
+module terraform-provider-neo4j
 
 go 1.16
 

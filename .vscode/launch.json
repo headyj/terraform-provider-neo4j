@@ -9,7 +9,7 @@
       "type": "go",
       "request": "launch",
       "mode": "test",
-      "program": "${workspaceRoot}/cypher/data_source_database_test.go",
+      "program": "${workspaceRoot}/neo4j/data_source_database_test.go",
       "args": [
           "-test.v",
           "-test.run",
@@ -23,7 +23,7 @@
     "type": "go",
     "request": "launch",
     "mode": "test",
-    "program": "${workspaceRoot}/cypher/resource_database_test.go",
+    "program": "${workspaceRoot}/neo4j/resource_database_test.go",
     "args": [
         "-test.v",
         "-test.run",
@@ -37,7 +37,7 @@
   "type": "go",
   "request": "launch",
   "mode": "test",
-  "program": "${workspaceRoot}/cypher/resource_user_test.go",
+  "program": "${workspaceRoot}/neo4j/resource_user_test.go",
   "args": [
       "-test.v",
       "-test.run",
@@ -51,7 +51,7 @@
   "type": "go",
   "request": "launch",
   "mode": "test",
-  "program": "${workspaceRoot}/cypher/resource_role_test.go",
+  "program": "${workspaceRoot}/neo4j/resource_role_test.go",
   "args": [
       "-test.v",
       "-test.run",
@@ -65,7 +65,7 @@
   "type": "go",
   "request": "launch",
   "mode": "test",
-  "program": "${workspaceRoot}/cypher/resource_grant_test.go",
+  "program": "${workspaceRoot}/neo4j/resource_grant_test.go",
   "args": [
       "-test.v",
       "-test.run",
@@ -79,7 +79,7 @@
   "type": "go",
   "request": "launch",
   "mode": "test",
-  "program": "${workspaceRoot}/cypher/resource_grant_test.go",
+  "program": "${workspaceRoot}/neo4j/resource_grant_test.go",
   "args": [
       "-test.v",
       "-test.run",

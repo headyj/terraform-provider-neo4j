@@ -1,4 +1,4 @@
-package cypher
+package neo4j
 
 import (
 	"fmt"
@@ -17,9 +17,9 @@ func TestResourceUser(t *testing.T) {
 			{
 				Config: testResourceUserConfig_basic(),
 				Check: resource.ComposeTestCheckFunc(
-					testAccUserExists("cypher_user.test"),
-					resource.TestCheckResourceAttr("cypher_user.test", "name", "testUser"),
-					resource.TestCheckResourceAttr("cypher_user.test", "password", "test"),
+					testAccUserExists("neo4j_user.test"),
+					resource.TestCheckResourceAttr("neo4j_user.test", "name", "testUser"),
+					resource.TestCheckResourceAttr("neo4j_user.test", "password", "test"),
 				),
 			},
 		},
@@ -54,19 +54,19 @@ func testAccUserExists(rn string) resource.TestCheckFunc {
 
 func testResourceUserConfig_basic() string {
 	return fmt.Sprint(`
-	provider "cypher" {
-		uri      = "neo4j://localhost:7687"
+	provider "neo4j" {
+		host      = "neo4j://localhost:7687"
 		username = "neo4j"
 		password = "password1"
 	}
-	resource "cypher_user" "test" {
+	resource "neo4j_user" "test" {
 		name = "testUser"
 		password = "test"
 		roles = [
-			cypher_role.test_role.name
+			neo4j_role.test_role.name
 		]
 	}
-	resource "cypher_role" "test_role" {
+	resource "neo4j_role" "test_role" {
 		name ="testRole"
 	}
 	`)

@@ -1,4 +1,4 @@
-package cypher
+package neo4j
 
 import (
 	"context"

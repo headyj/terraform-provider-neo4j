@@ -1,4 +1,4 @@
-package cypher
+package neo4j
 
 import (
 	"fmt"
@@ -15,8 +15,8 @@ func TestResourceDatabase(t *testing.T) {
 			{
 				Config: testResourceDatabaseConfig_basic(),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.cypher_databases.all", "name", "mysql"),
-					resource.TestCheckResourceAttr("data.cypher_databases.all", "pattern", "%"),
+					resource.TestCheckResourceAttr("data.neo4j_databases.all", "name", "mysql"),
+					resource.TestCheckResourceAttr("data.neo4j_databases.all", "pattern", "%"),
 				),
 			},
 		},
@@ -25,12 +25,12 @@ func TestResourceDatabase(t *testing.T) {
 
 func testResourceDatabaseConfig_basic() string {
 	return fmt.Sprint(`
-	provider "cypher" {
-		uri      = "neo4j://localhost:7687"
+	provider "neo4j" {
+		host      = "neo4j://localhost:7687"
 		username = "neo4j"
 		password = "password1"
 	}
-	resource "cypher_database" "test" {
+	resource "neo4j_database" "test" {
 		name = "test"
 	}
 	`)

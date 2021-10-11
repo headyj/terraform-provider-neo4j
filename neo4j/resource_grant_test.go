@@ -1,4 +1,4 @@
-package cypher
+package neo4j
 
 import (
 	"fmt"
@@ -17,8 +17,8 @@ func TestResourceGrant(t *testing.T) {
 			{
 				Config: testResourceGrantConfig_basic(),
 				Check: resource.ComposeTestCheckFunc(
-					testAccGrantExists("cypher_role.test"),
-					resource.TestCheckResourceAttr("cypher_role.test", "name", "testRole"),
+					testAccGrantExists("neo4j_role.test"),
+					resource.TestCheckResourceAttr("neo4j_role.test", "name", "testRole"),
 				),
 			},
 		},
@@ -33,33 +33,33 @@ func TestImportResourceGrant(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config:        testResourceGrantConfig_import(),
-				ResourceName:  "cypher_grant.reader",
+				ResourceName:  "neo4j_grant.reader",
 				ImportState:   true,
 				ImportStateId: "ACCESS:*:reader",
 			},
 			{
 				Config:        testResourceGrantConfig_import(),
-				ResourceName:  "cypher_grant.reader_match_all_node",
+				ResourceName:  "neo4j_grant.reader_match_all_node",
 				ImportState:   true,
-				ImportStateId: "MATCH:*:*:NODE:*:reader",
+				ImportStateId: "MATCH:*:reader_*_NODE:*",
 			},
 			{
 				Config:        testResourceGrantConfig_import(),
-				ResourceName:  "cypher_grant.reader_match_all_relationship",
+				ResourceName:  "neo4j_grant.reader_match_all_relationship",
 				ImportState:   true,
-				ImportStateId: "MATCH:*:*:RELATIONSHIP:*:reader",
+				ImportStateId: "MATCH:*:reader_*_RELATIONSHIP:*",
 			},
 			{
 				Config:        testResourceGrantConfig_import(),
-				ResourceName:  "cypher_grant.admin_access_all",
+				ResourceName:  "neo4j_grant.admin_access_all",
 				ImportState:   true,
 				ImportStateId: "ACCESS:*:admin",
 			},
 			{
 				Config:        testResourceGrantConfig_import(),
-				ResourceName:  "cypher_grant.admin_transaction_management_all",
+				ResourceName:  "neo4j_grant.admin_transaction_management_all",
 				ImportState:   true,
-				ImportStateId: "TRANSACTION MANAGEMENT:*:*:admin",
+				ImportStateId: "TRANSACTION-MANAGEMENT:*:admin_*",
 			},
 		},
 	})
@@ -93,23 +93,23 @@ func testAccGrantExists(rn string) resource.TestCheckFunc {
 
 func testResourceGrantConfig_basic() string {
 	return fmt.Sprint(`
-	provider "cypher" {
-		uri      = "neo4j://localhost:7687"
+	provider "neo4j" {
+		host      = "neo4j://localhost:7687"
 		username = "neo4j"
 		password = "password1"
 	}
-	resource "cypher_role" "test" {
+	resource "neo4j_role" "test" {
 		name = "testRole"
 	}
-	resource "cypher_user" "test" {
+	resource "neo4j_user" "test" {
 		name = "testUser"
 		password = "test"
 		roles = [
-			cypher_role.test.name
+			neo4j_role.test.name
 		]
 	}
-	resource "cypher_grant" "test" {
-		role = "${cypher_role.test.name}"
+	resource "neo4j_grant" "test" {
+		role = "${neo4j_role.test.name}"
 		privilege = "READ"
 		resource = "*"
 		name = "*"
@@ -121,42 +121,42 @@ func testResourceGrantConfig_basic() string {
 
 func testResourceGrantConfig_import() string {
 	return fmt.Sprint(`
-	provider "cypher" {
-		uri      = "neo4j://localhost:7687"
+	provider "neo4j" {
+		host      = "neo4j://localhost:7687"
 		username = "neo4j"
 		password = "password1"
 	}
-	resource "cypher_role" "reader" {
+	resource "neo4j_role" "reader" {
 		name = "reader"
 	}
-	resource "cypher_role" "admin" {
+	resource "neo4j_role" "admin" {
 		name = "admin"
 	}
-	resource "cypher_grant" "reader" {
-		role = "${cypher_role.reader.name}"
+	resource "neo4j_grant" "reader" {
+		role = "${neo4j_role.reader.name}"
 		privilege = "ACCESS"
 		name = "*"
 	}
-	resource "cypher_grant" "reader_match_all_node" {
-		role        = "${cypher_role.reader.name}"
+	resource "neo4j_grant" "reader_match_all_node" {
+		role        = "${neo4j_role.reader.name}"
 		privilege   = "MATCH"
 		resource    = "*"
 		name        = "*"
 		entity_type = "NODE"
 	}
-	resource "cypher_grant" "reader_match_all_relationship" {
-		role        = "${cypher_role.reader.name}"
+	resource "neo4j_grant" "reader_match_all_relationship" {
+		role        = "${neo4j_role.reader.name}"
 		privilege   = "MATCH"
 		resource    = "*"
 		name        = "*"
 		entity_type = "RELATONSHIPO"
 	}
-	resource "cypher_grant" "admin_access_all" {
+	resource "neo4j_grant" "admin_access_all" {
 		role        = "admin"
 		privilege   = "ACCESS"
 		name        = "*"
 	}
-	resource "cypher_grant" "admin_transaction_management_all" {
+	resource "neo4j_grant" "admin_transaction_management_all" {
 		role        = "admin"
 		privilege   = "ACCESS"
 		resource = "*"

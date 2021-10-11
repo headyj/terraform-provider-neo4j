@@ -1,4 +1,4 @@
-package cypher
+package neo4j
 
 import (
 	"fmt"
@@ -17,9 +17,9 @@ func TestDatabases(t *testing.T) {
 			{
 				Config: testDatabasesConfig_basic(),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.cypher_databases.all", "name", "mysql"),
-					resource.TestCheckResourceAttr("data.cypher_databases.all", "pattern", "%"),
-					testDatabasesCount("data.cypher_databases.all", "tables.#", func(rn string, table_count int) error {
+					resource.TestCheckResourceAttr("data.neo4j_databases.all", "name", "mysql"),
+					resource.TestCheckResourceAttr("data.neo4j_databases.all", "pattern", "%"),
+					testDatabasesCount("data.neo4j_databases.all", "tables.#", func(rn string, table_count int) error {
 						if table_count < 1 {
 							return fmt.Errorf("%s: tables not found", rn)
 						}
@@ -59,11 +59,11 @@ func testDatabasesCount(rn string, key string, check func(string, int) error) re
 
 func testDatabasesConfig_basic() string {
 	return fmt.Sprint(`
-	provider "cypher" {
-		uri      = "neo4j://localhost:7687"
+	provider "neo4j" {
+		host      = "neo4j://localhost:7687"
 		username = "neo4j"
 		password = "password1"
 	}
-	data "cypher_databases" "all" {}
+	data "neo4j_databases" "all" {}
 	`)
 }

@@ -1,9 +1,9 @@
 TEST?=$$(go list ./... | grep -v 'vendor')
-HOSTNAME=hashicorp.com
-NAMESPACE=edu
-NAME=cypher
+HOSTNAME=registry.terraform.io
+NAMESPACE=headyj
+NAME=neo4j
 BINARY=terraform-provider-${NAME}
-VERSION=0.2
+VERSION=0.1.0
 OS_ARCH=darwin_amd64
 
 default: install

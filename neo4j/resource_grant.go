@@ -1,4 +1,4 @@
-package cypher
+package neo4j
 
 import (
 	"context"
@@ -55,11 +55,12 @@ func resourceGrant() *schema.Resource {
 	}
 }
 
-func buildQuery2(privilege string, resource string, name string, entity_type string, entity string, role string, revoke bool) (string, string, error) {
+func buildQuery(privilege string, resource string, name string, entity_type string, entity string, role string, revoke bool) (string, string, error) {
 	var resourcePrefix = ""
 	var resourceSuffix = " "
 	var grantType string
 	var entityQuery string
+	privilege = strings.ReplaceAll(privilege, "-", " ")
 	switch privilege {
 	case "TRAVERSE", "READ", "MATCH", "SET PROPERTY", "MERGE":
 		grantType = "GRAPH"
@@ -123,83 +124,11 @@ func buildQuery2(privilege string, resource string, name string, entity_type str
 	//"GRANT ACCESS ON DATABASE *  TO `reader`"
 
 }
-
-func buildQuery(d *schema.ResourceData, revoke bool) (string, string, error) {
-	resource := d.Get("resource").(string)
-	name := d.Get("name").(string)
-	entity := d.Get("entity").(string)
-	role := d.Get("role").(string)
-
-	var resourcePrefix = ""
-	var resourceSuffix = ""
-	var privilege string
-	//var resourceAllowed bool
-	var grantType string
-	var entityQuery string
-	switch d.Get("privilege") {
-	case "TRAVERSE", "READ", "MATCH", "SET PROPERTY", "MERGE":
-		grantType = "GRAPH"
-		resourcePrefix = "{"
-		resourceSuffix = "}"
-		privilege = d.Get("privilege").(string)
-		if d.Get("entity_type") == "NODE" || d.Get("entity_type") == "RELATIONSHIP" {
-			entityQuery = fmt.Sprintf("%s %s", d.Get("entity_type"), entity)
-		} else {
-			return "", "", errors.New(fmt.Sprintf("Unexpected entity type: %s", d.Get("entity_type").(string)))
-		}
-	case "CREATE", "DELETE", "SET LABEL", "REMOVE LABEL", "WRITE", "ALL GRAPH PRIVILEGES":
-		grantType = "GRAPH"
-		privilege = d.Get("privilege").(string)
-		if d.Get("entity_type") == "NODE" || d.Get("entity_type") == "RELATIONSHIP" {
-			entityQuery = fmt.Sprintf("%s %s", d.Get("entity_type"), entity)
-		} else {
-			return "", "", errors.New(fmt.Sprintf("Unexpected entity type: %s", d.Get("entity_type").(string)))
-		}
-	case "ACCESS", "START", "STOP", "CREATE INDEX", "DROP INDEX", "SHOW INDEX", "CREATE CONSTRAINT", "DROP CONSTRAINT", "SHOW CONSTRAINT", "CREATE NEW NAME", "SHOW TRANSACTION", "TERMINATE TRANSACTION":
-		grantType = "DATABASE"
-		privilege = d.Get("privilege").(string)
-	case "INDEX", "INDEX MANAGEMENT":
-		grantType = "DATABASE"
-		privilege = "INDEX MANAGEMENT"
-	case "CONSTRAINT", "CONSTRAINT MANAGEMENT":
-		grantType = "DATABASE"
-		privilege = "CONSTRAINT MANAGEMENT"
-	case "CREATE NEW LABEL", "CREATE NEW NODE LABEL":
-		grantType = "DATABASE"
-		privilege = "CREATE NEW NODE LABEL"
-	case "CREATE NEW TYPE", "CREATE NEW RELATIONSHIP TYPE":
-		grantType = "DATABASE"
-		privilege = "CREATE NEW RELATIONSHIP TYPE"
-	case "NAME", "NAME MANAGEMENT":
-		grantType = "DATABASE"
-		privilege = "NAME MANAGEMENT"
-	case "ALL", "ALL DATABASE", "ALL DATABASE PRIVILEGES":
-		grantType = "DATABASE"
-		privilege = "ALL DATABASE PRIVILEGES"
-	case "TRANSACTION", "TRANSACTION MANAGEMENT":
-		grantType = "DATABASE"
-		privilege = "TRANSACTION MANAGEMENT"
-	default:
-		return "", "", errors.New(fmt.Sprintf("Unexpected privilege: %s", d.Get("privilege").(string)))
-	}
-
-	if name != "*" {
-		name = fmt.Sprintf("`%s`", d.Get("name").(string))
-	}
-
-	toFrom := "TO"
-	if revoke {
-		toFrom = "FROM"
-	}
-	return fmt.Sprintf("GRANT %s %s%s%s ON %s %s %s %s `%s`", privilege, resourcePrefix, resource, resourceSuffix, grantType, name, entityQuery, toFrom, role), privilege, nil
-}
-
 func resourceGrantCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
-	query, privilege, err := buildQuery2(d.Get("privilege").(string), d.Get("resource").(string), d.Get("name").(string), d.Get("entity_type").(string), d.Get("entity").(string), d.Get("role").(string), false)
-	//query, privilege, err := buildQuery(d, false)
+	query, privilege, err := buildQuery(d.Get("privilege").(string), d.Get("resource").(string), d.Get("name").(string), d.Get("entity_type").(string), d.Get("entity").(string), d.Get("role").(string), false)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -225,13 +154,23 @@ func resourceGrantCreate(ctx context.Context, d *schema.ResourceData, m interfac
 	  privilege:name:role|resource|entity:entity_type
 	*/
 
-	if d.Get("entity_type") != "" {
-		d.SetId(fmt.Sprintf("%s:%s:%s:%s:%s:%s", privilege, d.Get("resource"), d.Get("name"), d.Get("entity_type"), d.Get("entity"), d.Get("role")))
-	} else if d.Get("resource") != "" {
-		d.SetId(fmt.Sprintf("%s:%s:%s:%s", privilege, d.Get("resource"), d.Get("name"), d.Get("role")))
+	id := fmt.Sprintf("%s:%s:%s", strings.ReplaceAll(privilege, " ", "-"), d.Get("name"), d.Get("role"))
+
+	if d.Get("entity_type") != "" && d.Get("entity") != "" {
+		id += fmt.Sprintf("_%s_%s:%s", d.Get("resource"), d.Get("entity_type"), d.Get("entity"))
 	} else {
-		d.SetId(fmt.Sprintf("%s:%s:%s", privilege, d.Get("name"), d.Get("role")))
+		if d.Get("resource") != "" {
+			id += fmt.Sprintf("_%s", d.Get("resources"))
+		}
 	}
+	d.SetId(id)
+
+	//	d.SetId(fmt.Sprintf("%s:%s:%s:%s:%s:%s", privilege, d.Get("resource"), d.Get("name"), d.Get("entity_type"), d.Get("entity"), d.Get("role")))
+	//} else if d.Get("resource") != "" {
+	//	d.SetId(fmt.Sprintf("%s:%s:%s:%s", privilege, d.Get("resource"), d.Get("name"), d.Get("role")))
+	//} else {
+	//	d.SetId(fmt.Sprintf("%s:%s:%s", privilege, d.Get("name"), d.Get("role")))
+	//}
 
 	return diags
 }
@@ -240,8 +179,7 @@ func resourceGrantRead(ctx context.Context, d *schema.ResourceData, m interface{
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
-	query, _, err := buildQuery2(d.Get("privilege").(string), d.Get("resource").(string), d.Get("name").(string), d.Get("entity_type").(string), d.Get("entity").(string), d.Get("role").(string), false)
-	//query, _, err := buildQuery(d, false)
+	query, _, err := buildQuery(d.Get("privilege").(string), d.Get("resource").(string), d.Get("name").(string), d.Get("entity_type").(string), d.Get("entity").(string), d.Get("role").(string), false)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -279,9 +217,8 @@ func resourceGrantUpdate(ctx context.Context, d *schema.ResourceData, m interfac
 func resourceGrantDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
-	query, _, err := buildQuery2(d.Get("privilege").(string), d.Get("resource").(string), d.Get("name").(string), d.Get("entity_type").(string), d.Get("entity").(string), d.Get("role").(string), true)
+	query, _, err := buildQuery(d.Get("privilege").(string), d.Get("resource").(string), d.Get("name").(string), d.Get("entity_type").(string), d.Get("entity").(string), d.Get("role").(string), true)
 
-	//query, _, err := buildQuery(d, true)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -306,31 +243,34 @@ func resourceGrantDelete(ctx context.Context, d *schema.ResourceData, m interfac
 
 func resourceGrantImport(d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
 
-	idMembers := strings.Split(d.Id(), ":")
-
+	var privilege string
 	var role string
 	var name string
-	var resource string
-	var entity_type string
-	var entity string
-	privilege := idMembers[0]
+	resource := ""
+	entity_type := ""
+	entity := ""
+	idGroups := strings.Split(d.Id(), "_")
+	if len(idGroups) > 0 {
+		mandatoryMembers := strings.Split(idGroups[0], ":")
 
-	if len(idMembers) == 3 {
-		name = idMembers[1]
-		role = idMembers[2]
-	} else if len(idMembers) == 4 {
-		resource = idMembers[1]
-		name = idMembers[2]
-		role = idMembers[3]
-	} else if len(idMembers) == 6 {
-		resource = idMembers[1]
-		name = idMembers[2]
-		entity_type = idMembers[3]
-		entity = idMembers[4]
-		role = idMembers[5]
+		if len(mandatoryMembers) != 3 {
+			return nil, fmt.Errorf("Wrong ID format")
+		}
+		privilege = strings.ReplaceAll(mandatoryMembers[0], "-", " ")
+		name = mandatoryMembers[1]
+		role = mandatoryMembers[2]
+		if len(idGroups) > 1 {
+			resource = idGroups[1]
+		}
+		if len(idGroups) > 2 {
+			entities := strings.Split(idGroups[2], ":")
+			entity_type = entities[0]
+			entity = entities[1]
+		}
 	} else {
 		return nil, fmt.Errorf("Wrong ID format")
 	}
+	idMembers := strings.Split(d.Id(), "_")
 
 	c, err := m.(*Neo4jConfiguration).GetDbConn()
 	if err != nil {
@@ -339,7 +279,7 @@ func resourceGrantImport(d *schema.ResourceData, m interface{}) ([]*schema.Resou
 	defer c.Close()
 	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 	defer session.Close()
-	command, _, err := buildQuery2(privilege, resource, name, entity_type, entity, role, false)
+	command, _, err := buildQuery(privilege, resource, name, entity_type, entity, role, false)
 	result, err := neo4j.Single(session.Run("SHOW ROLE $rolename PRIVILEGES AS COMMANDS where command = $command", map[string]interface{}{"rolename": role, "command": command}))
 	if err != nil {
 		return nil, err

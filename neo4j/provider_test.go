@@ -1,4 +1,4 @@
-package cypher
+package neo4j
 
 import (
 	"fmt"
@@ -14,7 +14,7 @@ var testAccProvider *schema.Provider
 func init() {
 	testAccProvider = Provider()
 	testAccProviders = map[string]*schema.Provider{
-		"cypher": testAccProvider,
+		"neo4j": testAccProvider,
 	}
 }
 
@@ -29,9 +29,9 @@ func init() {
 //}
 
 func testAccPreCheck(t *testing.T) {
-	for _, name := range []string{"NEO4J_URI", "NEO4J_USERNAME"} {
+	for _, name := range []string{"NEO4J_HOST", "NEO4J_USERNAME"} {
 		if v := os.Getenv(name); v == "" {
-			t.Fatal("NEO4J_URI, NEO4J_USERNAME and optionally NEO4J_PASSWORD must be set for acceptance tests")
+			t.Fatal("NEO4J_HOST, NEO4J_USERNAME and optionally NEO4J_PASSWORD must be set for acceptance tests")
 		}
 	}
 
@@ -39,8 +39,8 @@ func testAccPreCheck(t *testing.T) {
 
 func testAccProviderConfig() string {
 	return fmt.Sprint(`
-	provider "cypher" {
-		uri      = "neo4j://localhost:7687"
+	provider "neo4j" {
+		host      = "neo4j://localhost:7687"
 		username = "neo4j"
 		password = "password1"
 	}
