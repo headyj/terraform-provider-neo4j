@@ -57,7 +57,7 @@ func testResourceUserConfig_basic() string {
 	provider "neo4j" {
 		host      = "neo4j://localhost:7687"
 		username = "neo4j"
-		password = "password1"
+		password = "password"
 	}
 	resource "neo4j_user" "test" {
 		name = "testUser"

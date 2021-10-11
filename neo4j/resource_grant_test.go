@@ -96,7 +96,7 @@ func testResourceGrantConfig_basic() string {
 	provider "neo4j" {
 		host      = "neo4j://localhost:7687"
 		username = "neo4j"
-		password = "password1"
+		password = "password"
 	}
 	resource "neo4j_role" "test" {
 		name = "testRole"
@@ -124,7 +124,7 @@ func testResourceGrantConfig_import() string {
 	provider "neo4j" {
 		host      = "neo4j://localhost:7687"
 		username = "neo4j"
-		password = "password1"
+		password = "password"
 	}
 	resource "neo4j_role" "reader" {
 		name = "reader"

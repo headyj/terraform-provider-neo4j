@@ -10,7 +10,7 @@ Neo4j is a graph database. This provider gives the ability to create, update, de
 provider "neo4j" {
   host      = "neo4j://localhost:7687"
   username = "neo4j"
-  password = "password1"
+  password = "password"
 }
 ```
 

@@ -62,7 +62,7 @@ func testDatabasesConfig_basic() string {
 	provider "neo4j" {
 		host      = "neo4j://localhost:7687"
 		username = "neo4j"
-		password = "password1"
+		password = "password"
 	}
 	data "neo4j_databases" "all" {}
 	`)
