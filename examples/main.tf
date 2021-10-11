@@ -10,18 +10,22 @@ terraform {
 provider "neo4j" {
   host     = "neo4j://localhost:7687"
   username = "neo4j"
-  password = "password1"
+  password = "password"
 }
 
-module "psl" {
-  source = "./neo4j"
-
+resource "neo4j_database" "my_database" {
+  name = "myDatabase"
 }
 
-/*output "database" {
-  value = module.psl.database
+resource "neo4j_role" "my_role" {
+  name = "myRole"
 }
 
-output "databases" {
-  value = module.psl.databases
-}*/
+resource "neo4j_user" "my_user" {
+  name     = "myUser"
+  password = "password"
+
+  roles = [
+    neo4j_role.my_role.name
+  ]
+}
