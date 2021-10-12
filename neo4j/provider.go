@@ -21,7 +21,7 @@ func Provider() *schema.Provider {
 			"host": &schema.Schema{
 				Type:        schema.TypeString,
 				Optional:    true,
-				DefaultFunc: schema.EnvDefaultFunc("NEO4J_USERNAME", nil),
+				DefaultFunc: schema.EnvDefaultFunc("NEO4J_HOST", nil),
 			},
 			"username": &schema.Schema{
 				Type:        schema.TypeString,
