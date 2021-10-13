@@ -2,7 +2,7 @@
 
 Neo4j is a graph database. This provider gives the ability to create, update, delete and import resources from a Neo4j Entreprise server
 
-> :warning: **Neo4j Enterprise is a licensed product. Please read the [official license documentation](https://neo4j.com/licensing)**
+> **WARNING: Neo4j Enterprise is a licensed product. Please read the [official license documentation](https://neo4j.com/licensing)**
 
 ## Example Usage
 

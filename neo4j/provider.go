@@ -41,9 +41,6 @@ func Provider() *schema.Provider {
 			"neo4j_role":     resourceRole(),
 			"neo4j_grant":    resourceGrant(),
 		},
-		DataSourcesMap: map[string]*schema.Resource{
-			"neo4j_databases": dataSourceDatabases(),
-		},
 		ConfigureContextFunc: providerConfigure,
 	}
 }

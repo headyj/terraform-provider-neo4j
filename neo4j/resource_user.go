@@ -38,9 +38,6 @@ func resourceUser() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 		},
-		//Importer: &schema.ResourceImporter{
-		//	State: resourceUserImport,
-		//},
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -118,16 +115,6 @@ func resourceUserUpdate(ctx context.Context, d *schema.ResourceData, m interface
 	defer c.Close()
 	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 	defer session.Close()
-
-	/*if d.HasChange("name") {
-		current_username, new_username := d.GetChange("name")
-		_, err = session.Run("RENAME USER $current_username TO $new_username", map[string]interface{}{"current_username": current_username, "new_username": new_username})
-		if err != nil {
-			return diag.FromErr(err)
-		}
-		d.Set("name", new_username)
-
-	}*/
 
 	if d.HasChange("password") {
 		_, err = session.Run("ALTER USER $username SET PASSWORD $password", map[string]interface{}{"username": d.Get("name"), "password": d.Get("password")})

@@ -1,9 +1,9 @@
 # Terraform Neo4j provider
 
-
 ## Build
 Run the following command to build the provider
-`go build -o terraform-provider-neo4j
+`
+go build -o terraform-provider-neo4j
 `
 ## Run Neo4j
 

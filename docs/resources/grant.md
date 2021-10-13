@@ -1,12 +1,18 @@
-# neo4j_database
+# neo4j_grant
 
 the `neo4j_grant` resource creates and manage grants on a Neo4j server.
 
 ## Example Usage
 
 ```hcl
-resource "neo4j_database" "my_database" {
-  name ="myDatabase"
+resource "neo4j_role" "my_role" {
+  name = "myRole"
+}
+resource "neo4j_grant" "my_grant" {
+  action   = "match"
+  graph    = "neo4j"
+  role     = neo4j_role.my_role.name
+  resource = "all_properties"
 }
 ```
 
@@ -14,47 +20,67 @@ resource "neo4j_database" "my_database" {
 
 The following arguments are supported:
 
-* `privilege` - (Required) The privilege name of the grant. It can be both related to databases or graphs. Please read [the offical documentation](https://neo4j.com/docs/cypher-manual/current/access-control/manage-roles/) for more information
-* `name` - (Required) The name of the database or graph associated with the grant. it can be "*" or the specific database or graph name
+* `action` - (Required) The privilege name of the grant. It can be both related to databases or graphs. See [available actions](#available-actions) below for valid values. Please read [the offical documentation](https://neo4j.com/docs/cypher-manual/current/access-control/manage-roles/) for more information.
+* `graph` - (Required) The name of the database or graph associated with the grant. it can be "*" or the specific database or graph name.
 * `role` - (Required) The role associated with the grant.
-* `resource` - (Optional) The role associated with the grant.
-* `entity_type` - (Optional) In the case of graph related grant, you can specify the entity type of the grant. It can be "NODE" or "RELATIONSHIP"
-* `entity` - (Optional) In the case of graph related grant, you can specify the entity of the grant. It can be "*" or a specific entity name
+* `resource` - (Optional) The resource associated with the grant. Valid values are (depending on the type of action) `all_labels`, `all_properties`,`graph`,`database`,`label(<value>)`,`property(<value>)`.
+* `segment` - (Optional) In the case of graph related grant, you can specify the segment of the grant. Valid values are `NODE(*)`, `RELATIONSHIP(*)`, `NODE(<value>)`, `RELATIONSHIP(<value>)`.
+
+### Available actions
+* traverse (TRAVERSE)
+* read (READ)
+* match (MATCH)
+* set_property (SET PROPERTY)
+* merge (MERGE)
+* create_element (CREATE)
+* delete_element (DELETE)
+* set_label (SET LABEL)
+* remove_label (REMOVE LABEL)
+* write (WRITE)
+* graph_actions (ALL GRAPH PRIVILEGES)
+* access (ACCESS)
+* start_database (START)
+* stop_database (STOP)
+* create_index (CREATE INDEX)
+* drop_index (DROP INDEX)
+* show_index (SHOW INDEX)
+* create_constraint (CREATE CONSTRAINT)
+* drop_constraint (DROP CONSTRAINT)
+* show_constraint (SHOW CONSTRAINT)
+* create_propertykey (CREATE NEW NAME)
+* show_transaction (SHOW TRANSACTION)
+* terminate_transaction (TERMINATE TRANSACTION)
+* index (INDEX MANAGEMENT)
+* constraint (CONSTRAINT MANAGEMENT)
+* create_label (CREATE NEW NODE LABEL)
+* create_reltype (CREATE NEW RELATIONSHIP TYPE)
+* name_management (NAME MANAGEMENT)
+* database_actions (ALL DATABASE PRIVILEGES)
+* transaction_management (TRANSACTION MANAGEMENT)
 
 ## Attribute Reference
 
 The following arguments are exported:
 
-* `privilege` - The privilege name of the grant.
-* `name` - The name of the database or graph associated with the grant.
+* `action` - The privilege name of the grant.
+* `graph` - The name of the database or graph associated with the grant.
 * `role` - The role associated with the grant.
-* `resource` - The role associated with the grant.
-* `entity_type` - the entity_type of the grant
-* `entity` - tne entity of the grant
+* `resource` - The resource associated with the grant.
+* `segment` - the segment of the grant
 
 ## Import
 
 neo4j_grant resource can be importe using the following pattern:
-firstGroup_secondGroup_thirdGroup
+action:graph:role:resource:segment
 
-* The first group is mandatory and represents the privilege, name and role associated with the grant:
-privilege:name:role
+action, name and role are mandatory. resource and segments are optional
 
-If the privilege is composed of multiple words (e.g. "TRANSACTION MANAGEMENT"), just put a dash between them
-
-* The second group is optional and represents the associated resource
-privilege:name:role_resource
-
-* The third group is optional and represents the entity type and entity name. If there is no resource, 2 separators have to be specified
-privilege:name:role__entity_type:entity
-privilege:name:role_resource_entity_type:entity
+Not that if there is no resource but a segment, you will have to put 2 separators.
 
 Here are some examples how to import default reader and admin roles on a Neo4j cluster
 
 ```bash
-terraform import neo4j_grant.reader_match_all ACCESS:*:reader
-terraform import neo4j_grant.reader_match_all_node MATCH:*:reader_*_NODE:*
-terraform import neo4j_grant.reader_match_all_relationship MATCH:*:reader_*_RELATIONSHIP:*
-terraform import neo4j_grant.admin_access_all ACCESS:*:admin
-terraform import neo4j_grant.admin_transaction_management_all TRANSACTION-MANAGEMENT:*:admin_*
+terraform import neo4j_grant.reader_match_all access:*:reader:database
+terraform import neo4j_grant.admin_access_all access:database:admin
+terraform import neo4j_grant.admin_transaction_management_all transaction_management:database:admin
 ```

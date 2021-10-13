@@ -44,9 +44,10 @@ func testAccUserExists(rn string) resource.TestCheckFunc {
 		defer c.Close()
 		session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 		defer session.Close()
-		result, err := neo4j.Single(session.Run("SHOW USER $username PRIVILEGES YIELD user RETURN user LIMIT 1", map[string]interface{}{"username": rs.Primary.ID}))
-
-		fmt.Print(result)
+		_, err = neo4j.Single(session.Run("SHOW USER $username PRIVILEGES YIELD user RETURN user LIMIT 1", map[string]interface{}{"username": rs.Primary.ID}))
+		if err != nil {
+			return err
+		}
 
 		return nil
 	}

@@ -61,10 +61,10 @@ func resourceRoleRead(ctx context.Context, d *schema.ResourceData, m interface{}
 	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 	defer session.Close()
 	result, err := neo4j.Single(session.Run("SHOW ROLES WHERE role = $role", map[string]interface{}{"role": d.Id()}))
-	name, _ := result.Get("role")
 	if err != nil {
 		return diag.FromErr(err)
 	}
+	name, _ := result.Get("role")
 
 	if err := d.Set("name", name); err != nil {
 		return diag.FromErr(err)

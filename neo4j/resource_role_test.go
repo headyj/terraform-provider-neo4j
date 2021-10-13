@@ -43,9 +43,10 @@ func testAccRoleExists(rn string) resource.TestCheckFunc {
 		defer c.Close()
 		session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 		defer session.Close()
-		result, err := neo4j.Single(session.Run("SHOW ROLE $name PRIVILEGES YIELD role RETURN role LIMIT 1", map[string]interface{}{"username": rs.Primary.ID}))
-
-		fmt.Print(result)
+		_, err = neo4j.Single(session.Run("SHOW ROLE $name PRIVILEGES YIELD role RETURN role LIMIT 1", map[string]interface{}{"username": rs.Primary.ID}))
+		if err != nil {
+			return err
+		}
 
 		return nil
 	}
