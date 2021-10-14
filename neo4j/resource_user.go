@@ -126,6 +126,31 @@ func resourceUserUpdate(ctx context.Context, d *schema.ResourceData, m interface
 		d.GetChange("password")
 	}
 
+	if d.HasChange("roles") {
+		oldRoles, newRoles := d.GetChange("roles")
+		oldRolesSet := oldRoles.(*schema.Set).List()
+		newRolesSet := newRoles.(*schema.Set).List()
+		var roleList []string
+		if len(oldRolesSet) > 0 {
+			for _, role := range oldRolesSet {
+				roleList = append(roleList, role.(string))
+			}
+			_, err = session.Run("REVOKE ROLE $roles FROM $username", map[string]interface{}{"roles": strings.Join(roleList, ","), "username": d.Get("name")})
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		}
+		if len(newRolesSet) > 0 {
+			for _, role := range newRolesSet {
+				roleList = append(roleList, role.(string))
+			}
+			_, err = session.Run("GRANT ROLE $roles TO $username", map[string]interface{}{"roles": strings.Join(roleList, ","), "username": d.Get("name")})
+			if err != nil {
+				return diag.FromErr(err)
+			}
+		}
+	}
+
 	return resourceUserRead(ctx, d, m)
 }
 

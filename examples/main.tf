@@ -14,7 +14,7 @@ provider "neo4j" {
 }
 
 resource "neo4j_database" "my_database" {
-  name = "myDatabase"
+  name = "mydatabase"
 }
 
 resource "neo4j_role" "my_role" {

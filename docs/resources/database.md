@@ -6,7 +6,7 @@ the `neo4j_database` resource creates and manage databases on a Neo4j server.
 
 ```hcl
 resource "neo4j_database" "my_database" {
-  name ="myDatabase"
+  name ="mydatabase"
 }
 ```
 
@@ -14,7 +14,7 @@ resource "neo4j_database" "my_database" {
 
 The following arguments are supported:
 
-* `name` - (Required) The name of the database.
+* `name` - (Required) The name of the database. Only lowercase are accepted by Neo4j
 
 ## Attribute Reference
 
@@ -27,5 +27,5 @@ The following arguments are exported:
 neo4j_database resource can be importe using the resource name, e.g.
 
 ```bash
-terraform import neo4j_user.my_database myDatabase
+terraform import neo4j_user.my_database mydatabase
 ```

@@ -15,8 +15,7 @@ func TestResourceDatabase(t *testing.T) {
 			{
 				Config: testResourceDatabaseConfig_basic(),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.neo4j_databases.all", "name", "mysql"),
-					resource.TestCheckResourceAttr("data.neo4j_databases.all", "pattern", "%"),
+					resource.TestCheckResourceAttr("neo4j_database.test", "name", "mydatabase2"),
 				),
 			},
 		},
@@ -31,7 +30,7 @@ func testResourceDatabaseConfig_basic() string {
 		password = "password"
 	}
 	resource "neo4j_database" "test" {
-		name = "test"
+		name = "myDatabase2"
 	}
 	`)
 }

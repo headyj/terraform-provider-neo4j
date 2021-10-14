@@ -2,6 +2,7 @@ package neo4j
 
 import (
 	"context"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -30,6 +31,10 @@ func resourceDatabaseCreate(ctx context.Context, d *schema.ResourceData, m inter
 
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
+
+	if strings.ToLower(d.Get("name").(string)) != d.Get("name").(string) {
+		return diag.Errorf("Neo4j does not allow uppercase in database name")
+	}
 	c, err := m.(*Neo4jConfiguration).GetDbConn()
 	if err != nil {
 		return diag.FromErr(err)
@@ -80,6 +85,10 @@ func resourceDatabaseUpdate(ctx context.Context, d *schema.ResourceData, m inter
 func resourceDatabaseDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
+
+	if strings.ToLower(d.Get("name").(string)) != d.Get("name").(string) {
+		return diag.Errorf("Neo4j does not allow uppercase in database name")
+	}
 
 	c, err := m.(*Neo4jConfiguration).GetDbConn()
 	if err != nil {
