@@ -36,7 +36,7 @@ func resourceRoleCreate(ctx context.Context, d *schema.ResourceData, m interface
 		return diag.FromErr(err)
 	}
 	defer c.Close()
-	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite, DatabaseName: "system"})
 	defer session.Close()
 
 	_, err = session.Run("CREATE ROLE $name", map[string]interface{}{"name": d.Get("name")})
@@ -58,7 +58,7 @@ func resourceRoleRead(ctx context.Context, d *schema.ResourceData, m interface{}
 		return diag.FromErr(err)
 	}
 	defer c.Close()
-	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
 	defer session.Close()
 	result, err := neo4j.Single(session.Run("SHOW ROLES WHERE role = $role", map[string]interface{}{"role": d.Id()}))
 	if err != nil {
@@ -94,7 +94,7 @@ func resourceRoleDelete(ctx context.Context, d *schema.ResourceData, m interface
 		return diag.FromErr(err)
 	}
 	defer c.Close()
-	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite, DatabaseName: "system"})
 	defer session.Close()
 
 	_, err = session.Run("DROP ROLE $role", map[string]interface{}{"role": d.Get("name")})

@@ -153,7 +153,7 @@ func resourceGrantCreate(ctx context.Context, d *schema.ResourceData, m interfac
 		return diag.FromErr(err)
 	}
 	defer c.Close()
-	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite, DatabaseName: "system"})
 	defer session.Close()
 
 	fmt.Println(query)
@@ -199,7 +199,7 @@ func resourceGrantRead(ctx context.Context, d *schema.ResourceData, m interface{
 		return diag.FromErr(err)
 	}
 	defer c.Close()
-	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
 	defer session.Close()
 	reqCommand := fmt.Sprintf("SHOW ROLE %s PRIVILEGES WHERE action = '%s' AND graph = '%s'", d.Get("role"), d.Get("action"), d.Get("graph"))
 	if d.Get("resource") != "" {
@@ -221,18 +221,6 @@ func resourceGrantRead(ctx context.Context, d *schema.ResourceData, m interface{
 	return diags
 }
 
-func resourceGrantUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	c, err := m.(*Neo4jConfiguration).GetDbConn()
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	defer c.Close()
-	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
-	defer session.Close()
-
-	return resourceGrantRead(ctx, d, m)
-}
-
 func resourceGrantDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
@@ -246,7 +234,7 @@ func resourceGrantDelete(ctx context.Context, d *schema.ResourceData, m interfac
 		return diag.FromErr(err)
 	}
 	defer c.Close()
-	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite, DatabaseName: "system"})
 	defer session.Close()
 	reqCommand := fmt.Sprintf("REVOKE %s", query)
 	_, err = session.Run(reqCommand, map[string]interface{}{})
@@ -287,7 +275,7 @@ func resourceGrantImport(d *schema.ResourceData, m interface{}) ([]*schema.Resou
 		return nil, err
 	}
 	defer c.Close()
-	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
 	defer session.Close()
 	command := fmt.Sprintf("SHOW ROLE %s PRIVILEGES WHERE action = '%s' AND graph = '%s'", role, action, graph)
 	if resource != "" {

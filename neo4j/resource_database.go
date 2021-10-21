@@ -40,7 +40,7 @@ func resourceDatabaseCreate(ctx context.Context, d *schema.ResourceData, m inter
 		return diag.FromErr(err)
 	}
 	defer c.Close()
-	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite, DatabaseName: "system"})
 	defer session.Close()
 
 	_, err = session.Run("CREATE DATABASE $database", map[string]interface{}{"database": d.Get("name")})
@@ -62,7 +62,7 @@ func resourceDatabaseRead(ctx context.Context, d *schema.ResourceData, m interfa
 		return diag.FromErr(err)
 	}
 	defer c.Close()
-	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
 	defer session.Close()
 	result, err := neo4j.Single(session.Run("SHOW DATABASE $database YIELD name LIMIT 1", map[string]interface{}{"database": d.Id()}))
 	if err != nil {
@@ -95,7 +95,7 @@ func resourceDatabaseDelete(ctx context.Context, d *schema.ResourceData, m inter
 		return diag.FromErr(err)
 	}
 	defer c.Close()
-	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite, DatabaseName: "system"})
 	defer session.Close()
 
 	_, err = session.Run("DROP DATABASE $database", map[string]interface{}{"database": d.Get("name")})

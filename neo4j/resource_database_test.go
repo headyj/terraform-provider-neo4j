@@ -30,7 +30,7 @@ func testResourceDatabaseConfig_basic() string {
 		password = "password"
 	}
 	resource "neo4j_database" "test" {
-		name = "myDatabase2"
+		name = "mydatabase2"
 	}
 	`)
 }
