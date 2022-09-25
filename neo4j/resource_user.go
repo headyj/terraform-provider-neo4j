@@ -92,7 +92,7 @@ func resourceUserRead(ctx context.Context, d *schema.ResourceData, m interface{}
 		return diag.FromErr(err)
 	}
 	defer c.Close()
-	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
+	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead, DatabaseName: "system"})
 	defer session.Close()
 	result, err := neo4j.Single(session.Run("SHOW USERS YIELD user WHERE user = $username", map[string]interface{}{"username": d.Id()}))
 	if err != nil {
