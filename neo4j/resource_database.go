@@ -62,7 +62,7 @@ func resourceDatabaseRead(ctx context.Context, d *schema.ResourceData, m interfa
 		return diag.FromErr(err)
 	}
 	defer c.Close()
-	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
+	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead, DatabaseName: "system"})
 	defer session.Close()
 	result, err := neo4j.Single(session.Run("SHOW DATABASE $database YIELD name LIMIT 1", map[string]interface{}{"database": d.Id()}))
 	if err != nil {
