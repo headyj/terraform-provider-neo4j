@@ -199,7 +199,7 @@ func resourceGrantRead(ctx context.Context, d *schema.ResourceData, m interface{
 		return diag.FromErr(err)
 	}
 	defer c.Close()
-	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
+	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead, DatabaseName: "system"})
 	defer session.Close()
 	reqCommand := fmt.Sprintf("SHOW ROLE %s PRIVILEGES WHERE action = '%s' AND graph = '%s'", d.Get("role"), d.Get("action"), d.Get("graph"))
 	if d.Get("resource") != "" {
