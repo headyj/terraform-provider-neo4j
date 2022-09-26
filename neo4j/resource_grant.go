@@ -275,7 +275,7 @@ func resourceGrantImport(d *schema.ResourceData, m interface{}) ([]*schema.Resou
 		return nil, err
 	}
 	defer c.Close()
-	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
+	session := c.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead, DatabaseName: "system"})
 	defer session.Close()
 	command := fmt.Sprintf("SHOW ROLE %s PRIVILEGES WHERE action = '%s' AND graph = '%s'", role, action, graph)
 	if resource != "" {
