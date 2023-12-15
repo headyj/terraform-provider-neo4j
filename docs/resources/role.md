@@ -27,5 +27,5 @@ The following arguments are exported:
 neo4j_database resource can be importe using the resource name, e.g.
 
 ```bash
-terraform import neo4j_user.my_role myRole
+terraform import neo4j_role.my_role myRole
 ```

@@ -24,11 +24,6 @@ func TestResourceDatabase(t *testing.T) {
 
 func testResourceDatabaseConfig_basic() string {
 	return fmt.Sprint(`
-	provider "neo4j" {
-		host      = "neo4j://localhost:7687"
-		username = "neo4j"
-		password = "password"
-	}
 	resource "neo4j_database" "test" {
 		name = "mydatabase2"
 	}
