@@ -6,7 +6,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
-	neo4j "github.com/neo4j/neo4j-go-driver/v4/neo4j"
+	neo4j "github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
 func TestResourceRole(t *testing.T) {
@@ -55,11 +55,6 @@ func testAccRoleExists(rn string) resource.TestCheckFunc {
 
 func testResourceRoleConfig_basic() string {
 	return fmt.Sprint(`
-	provider "neo4j" {
-		host      = "neo4j://localhost:7687"
-		username = "neo4j"
-		password = "password"
-	}
 	resource "neo4j_role" "test" {
 		name = "test"
 	}

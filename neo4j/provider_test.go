@@ -28,11 +28,15 @@ func testAccPreCheck(t *testing.T) {
 }
 
 func testAccProviderConfig() string {
-	return fmt.Sprint(`
+	return fmt.Sprintf(`
 	provider "neo4j" {
-		host      = "neo4j://localhost:7687"
-		username = "neo4j"
-		password = "password"
+		host      = "%s"
+		username = "%s"
+		password = "%s"
 	}
-	`)
+	`,
+		os.Getenv("NEO4J_HOST"),
+		os.Getenv("NEO4J_USERNAME"),
+		os.Getenv("NEO4J_PASSWORD"),
+	)
 }

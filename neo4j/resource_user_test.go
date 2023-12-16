@@ -6,7 +6,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
-	neo4j "github.com/neo4j/neo4j-go-driver/v4/neo4j"
+	neo4j "github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
 func TestResourceUser(t *testing.T) {
@@ -19,7 +19,7 @@ func TestResourceUser(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccUserExists("neo4j_user.test"),
 					resource.TestCheckResourceAttr("neo4j_user.test", "name", "testUser"),
-					resource.TestCheckResourceAttr("neo4j_user.test", "password", "test"),
+					resource.TestCheckResourceAttr("neo4j_user.test", "password", "testpassword"),
 				),
 			},
 		},
@@ -55,14 +55,9 @@ func testAccUserExists(rn string) resource.TestCheckFunc {
 
 func testResourceUserConfig_basic() string {
 	return fmt.Sprint(`
-	provider "neo4j" {
-		host      = "neo4j://localhost:7687"
-		username = "neo4j"
-		password = "password"
-	}
 	resource "neo4j_user" "test" {
 		name = "testUser"
-		password = "test"
+		password = "testpassword"
 		roles = [
 			neo4j_role.test_role.name
 		]

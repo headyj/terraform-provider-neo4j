@@ -5,7 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	neo4j "github.com/neo4j/neo4j-go-driver/v4/neo4j"
+	neo4j "github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
 type Neo4jConfiguration struct {
