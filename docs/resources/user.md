@@ -1,3 +1,10 @@
+---
+layout: "neo4j"
+page_title: "Neo4j: neo4j_user"
+description: |-
+  Neo4j user
+---
+
 # neo4j_user
 
 the `neo4j_user` resource creates and manage users on a Neo4j server.

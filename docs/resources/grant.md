@@ -1,3 +1,10 @@
+---
+layout: "neo4j"
+page_title: "Neo4j: neo4j_grant"
+description: |-
+  Neo4j grant
+---
+
 # neo4j_grant
 
 the `neo4j_grant` resource creates and manage grants on a Neo4j server.

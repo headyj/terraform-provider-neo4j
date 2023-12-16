@@ -1,3 +1,10 @@
+---
+layout: "neo4j"
+page_title: "Neo4j: neo4j_role"
+description: |-
+  Neo4j role
+---
+
 # neo4j_role
 
 the `neo4j_role` resource creates and manage roles on a Neo4j server.

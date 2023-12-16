@@ -1,3 +1,10 @@
+---
+layout: "neo4j"
+page_title: "Neo4j: neo4j_database"
+description: |-
+  Neo4j database
+---
+
 # neo4j_database
 
 the `neo4j_database` resource creates and manage databases on a Neo4j server.
