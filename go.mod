@@ -1,6 +1,6 @@
 module terraform-provider-neo4j
 
-go 1.16
+go 1.20
 
 require (
 	github.com/Masterminds/semver v1.5.0 // indirect
