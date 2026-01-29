@@ -59,11 +59,20 @@ func testResourceUserConfig_basic() string {
 		name = "testUser"
 		password = "testpassword"
 		roles = [
-			neo4j_role.test_role.name
+			neo4j_role.test_role.name,
+			neo4j_role.test_role2.name
 		]
+	}
+	resource "neo4j_user" "test2" {
+		name = "testUser"
+		password = "testpassword"
+		roles = ["publisher", "editor"]
 	}
 	resource "neo4j_role" "test_role" {
 		name ="testRole"
+	}
+	resource "neo4j_role" "test_role2" {
+		name ="testRole2"
 	}
 	`)
 }

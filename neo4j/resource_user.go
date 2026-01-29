@@ -69,14 +69,12 @@ func resourceUserCreate(ctx context.Context, d *schema.ResourceData, m interface
 	d.SetId(d.Get("name").(string))
 
 	roles := d.Get("roles").(*schema.Set).List()
-	var roleList []string
 	if len(roles) > 0 {
 		for _, role := range roles {
-			roleList = append(roleList, role.(string))
-		}
-		_, err = session.Run("GRANT ROLE $roles TO $username", map[string]interface{}{"roles": strings.Join(roleList, ","), "username": d.Get("name")})
-		if err != nil {
-			return diag.FromErr(err)
+			_, err = session.Run("GRANT ROLE $role TO $username", map[string]interface{}{"role": role.(string), "username": d.Get("name")})
+			if err != nil {
+				return diag.FromErr(err)
+			}
 		}
 	}
 
@@ -134,23 +132,20 @@ func resourceUserUpdate(ctx context.Context, d *schema.ResourceData, m interface
 		oldRoles, newRoles := d.GetChange("roles")
 		oldRolesSet := oldRoles.(*schema.Set).List()
 		newRolesSet := newRoles.(*schema.Set).List()
-		var roleList []string
 		if len(oldRolesSet) > 0 {
 			for _, role := range oldRolesSet {
-				roleList = append(roleList, role.(string))
-			}
-			_, err = session.Run("REVOKE ROLE $roles FROM $username", map[string]interface{}{"roles": strings.Join(roleList, ","), "username": d.Get("name")})
-			if err != nil {
-				return diag.FromErr(err)
+				_, err = session.Run("REVOKE ROLE $role FROM $username", map[string]interface{}{"role": role.(string), "username": d.Get("name")})
+				if err != nil {
+					return diag.FromErr(err)
+				}
 			}
 		}
 		if len(newRolesSet) > 0 {
 			for _, role := range newRolesSet {
-				roleList = append(roleList, role.(string))
-			}
-			_, err = session.Run("GRANT ROLE $roles TO $username", map[string]interface{}{"roles": strings.Join(roleList, ","), "username": d.Get("name")})
-			if err != nil {
-				return diag.FromErr(err)
+				_, err = session.Run("GRANT ROLE $role TO $username", map[string]interface{}{"role": role.(string), "username": d.Get("name")})
+				if err != nil {
+					return diag.FromErr(err)
+				}
 			}
 		}
 	}
